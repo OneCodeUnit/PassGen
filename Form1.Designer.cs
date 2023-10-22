@@ -34,12 +34,13 @@
             CheckBoxCapital = new CheckBox();
             CheckBoxLower = new CheckBox();
             CheckBoxNumber = new CheckBox();
-            CheckBoxSpace = new CheckBox();
+            CheckBoxForce = new CheckBox();
             CheckBoxSpecial = new CheckBox();
             CheckBoxLine = new CheckBox();
             ButtonCopy = new Button();
             SizeBar = new TrackBar();
             LabelScrollValue = new Label();
+            CheckBoxReadable = new CheckBox();
             ((System.ComponentModel.ISupportInitialize)SizeBar).BeginInit();
             SuspendLayout();
             // 
@@ -105,17 +106,19 @@
             CheckBoxNumber.UseVisualStyleBackColor = true;
             CheckBoxNumber.CheckedChanged += CheckBox_CheckedChanged;
             // 
-            // CheckBoxSpace
+            // CheckBoxForce
             // 
-            CheckBoxSpace.AutoSize = true;
-            CheckBoxSpace.Location = new Point(187, 277);
-            CheckBoxSpace.Margin = new Padding(4);
-            CheckBoxSpace.Name = "CheckBoxSpace";
-            CheckBoxSpace.Size = new Size(105, 32);
-            CheckBoxSpace.TabIndex = 8;
-            CheckBoxSpace.Text = "Пробел";
-            CheckBoxSpace.UseVisualStyleBackColor = true;
-            CheckBoxSpace.CheckedChanged += CheckBox_CheckedChanged;
+            CheckBoxForce.AutoSize = true;
+            CheckBoxForce.Checked = true;
+            CheckBoxForce.CheckState = CheckState.Checked;
+            CheckBoxForce.Location = new Point(187, 277);
+            CheckBoxForce.Margin = new Padding(4);
+            CheckBoxForce.Name = "CheckBoxForce";
+            CheckBoxForce.Size = new Size(135, 32);
+            CheckBoxForce.TabIndex = 8;
+            CheckBoxForce.Text = "Не менее 1";
+            CheckBoxForce.UseVisualStyleBackColor = true;
+            CheckBoxForce.CheckedChanged += CheckBox_CheckedChanged;
             // 
             // CheckBoxSpecial
             // 
@@ -175,16 +178,31 @@
             LabelScrollValue.TabIndex = 11;
             LabelScrollValue.Text = "Длина пароля: 12";
             // 
+            // CheckBoxReadable
+            // 
+            CheckBoxReadable.AutoSize = true;
+            CheckBoxReadable.Checked = true;
+            CheckBoxReadable.CheckState = CheckState.Checked;
+            CheckBoxReadable.Location = new Point(13, 317);
+            CheckBoxReadable.Margin = new Padding(4);
+            CheckBoxReadable.Name = "CheckBoxReadable";
+            CheckBoxReadable.Size = new Size(304, 32);
+            CheckBoxReadable.TabIndex = 12;
+            CheckBoxReadable.Text = "Улучшить читаемость пароля";
+            CheckBoxReadable.UseVisualStyleBackColor = true;
+            CheckBoxReadable.CheckedChanged += CheckBox_CheckedChanged;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(11F, 28F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            ClientSize = new Size(381, 323);
+            ClientSize = new Size(381, 362);
+            Controls.Add(CheckBoxReadable);
             Controls.Add(LabelScrollValue);
             Controls.Add(SizeBar);
             Controls.Add(ButtonCopy);
-            Controls.Add(CheckBoxSpace);
+            Controls.Add(CheckBoxForce);
             Controls.Add(CheckBoxSpecial);
             Controls.Add(CheckBoxLine);
             Controls.Add(CheckBoxNumber);
@@ -210,11 +228,12 @@
         private CheckBox CheckBoxCapital;
         private CheckBox CheckBoxLower;
         private CheckBox CheckBoxNumber;
-        private CheckBox CheckBoxSpace;
+        private CheckBox CheckBoxForce;
         private CheckBox CheckBoxSpecial;
         private CheckBox CheckBoxLine;
         private Button ButtonCopy;
         private TrackBar SizeBar;
         private Label LabelScrollValue;
+        private CheckBox CheckBoxReadable;
     }
 }

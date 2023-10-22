@@ -9,7 +9,7 @@
     <StartupObject>PassGen.Program</StartupObject>
     <ApplicationIcon>Resources\Icon.ico</ApplicationIcon>
     <Title>OliveWizrd PassGen</Title>
-    <Version>$(VersionPrefix) 1.0.0</Version>
+    <Version>$(VersionPrefix) 1.1.0</Version>
     <Authors>OliveWizard</Authors>
     <Description>Генератор паролей</Description>
     <PackageIcon>Logo.png</PackageIcon>
