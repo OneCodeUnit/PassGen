@@ -6,7 +6,7 @@ namespace PassGen
     {
         string AlphabetCapital = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         string AlphabetLower = "abcdefghijklmnopqrstuvwxyz";
-        const string AlphabetNumber = "0123456789";
+        string AlphabetNumber = "0123456789";
         const string AlphabetLine = "-_";
         string AlphabetSpecial = "`~!@#$%^&*()+={}[]\\|:;\"\'<>,.?/";
         string Password = string.Empty;
@@ -18,7 +18,8 @@ namespace PassGen
             {
                 AlphabetCapital = "ABCDEFGHJKPQRSTUVWXYZ";
                 AlphabetLower = "abcdefghjkpqrstuvwxyz";
-                AlphabetSpecial = "!@#$%&+=?";
+                AlphabetSpecial = "@#$%+=?";
+                AlphabetNumber = "23456789";
             }
 
             string alphabet = string.Empty;
