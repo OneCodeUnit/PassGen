@@ -16,7 +16,7 @@ namespace PassGen
         {
             if (CheckBoxReadable.Checked)
             {
-                AlphabetCapital = "ABCDEFGHJKPQRSTUVWXYZ";
+                AlphabetCapital = "ABCDEFGHJKMNPQRSTUVWXYZ";
                 AlphabetLower = "abcdefghjkpqrstuvwxyz";
                 AlphabetSpecial = "@#$%+=?";
                 AlphabetNumber = "23456789";
