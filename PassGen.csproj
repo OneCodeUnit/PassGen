@@ -9,7 +9,7 @@
     <StartupObject>PassGen.Program</StartupObject>
     <ApplicationIcon>Resources\Icon.ico</ApplicationIcon>
     <Title>OliveWizrd PassGen</Title>
-    <Version>$(VersionPrefix) 1.2.0</Version>
+    <Version>$(VersionPrefix) 1.3.0</Version>
     <Authors>OliveWizard</Authors>
     <Description>Генератор паролей</Description>
     <PackageIcon>Logo.png</PackageIcon>
@@ -23,7 +23,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>full</DebugType>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -31,7 +31,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DebugType>full</DebugType>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
