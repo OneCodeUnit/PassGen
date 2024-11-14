@@ -194,8 +194,8 @@
             // 
             // MainForm
             // 
-            AutoScaleDimensions = new SizeF(11F, 28F);
-            AutoScaleMode = AutoScaleMode.Font;
+            AutoScaleDimensions = new SizeF(120F, 120F);
+            AutoScaleMode = AutoScaleMode.Dpi;
             AutoSizeMode = AutoSizeMode.GrowAndShrink;
             ClientSize = new Size(381, 362);
             Controls.Add(CheckBoxReadable);
@@ -210,7 +210,7 @@
             Controls.Add(CheckBoxCapital);
             Controls.Add(FieldPassword);
             Controls.Add(ButtonGen);
-            Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            Font = new Font("Segoe UI", 12F);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Margin = new Padding(4);
             MaximizeBox = false;

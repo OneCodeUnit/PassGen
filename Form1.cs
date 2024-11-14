@@ -117,7 +117,6 @@ namespace PassGen
                 string randomSymbol = AlphabetSpecial[randomNumber].ToString();
                 Password = Password.Remove(Convert.ToInt32(positions[position].ToString()), 1);
                 Password = Password.Insert(Convert.ToInt32(positions[position].ToString()), randomSymbol);
-                position++;
             }
         }
 
