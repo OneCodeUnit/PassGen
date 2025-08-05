@@ -1,0 +1,77 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:PassGenNewUI.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="375" d:DesignHeight="360"
+        x:Class="PassGenNewUI.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/Icon.ico"
+        Title="Создай пароль!"
+        Width="375"
+        Height="360"
+        CanResize="False">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <StackPanel Margin="10" Spacing="10" Orientation="Vertical">
+        <Grid ColumnDefinitions="*, Auto" HorizontalAlignment="Stretch" ColumnSpacing="10">
+            <TextBox x:Name="FieldPassword" Grid.Column="0" HorizontalAlignment="Stretch" MinWidth="100" IsReadOnly="True" ToolTip.Tip="Созданные пароли. Если поле не изменилось, значит выбранные настройки не позволяют создать пароль"/>
+            <Button x:Name="ButtonCopy" Grid.Column="1" Width="34" Height="34" ToolTip.Tip="Скопировать пароль в буфер обмена" Click="ButtonCopy_Click">
+                <Image Source="/Assets/Copy.png" Stretch="Uniform"/>
+            </Button>
+        </Grid>
+        <Button x:Name="ButtonGen" Height="42"
+                Content="Новый пароль"
+                FontSize="20"
+                ToolTip.Tip="Создать новый пароль"
+                VerticalContentAlignment="Center"
+                HorizontalContentAlignment="Center"
+                HorizontalAlignment="Stretch"
+                Click="ButtonGen_Click"/>
+        <TextBlock x:Name="LabelScrollValue" Text="Длина пароля: 12" ToolTip.Tip="Текущая длина пароля"/>
+        <Slider x:Name="SizeBar" Minimum="3" Maximum="30" Value="12"
+                TickFrequency="1"
+                ToolTip.Tip="Двигая влево и вправо, можно изменить длину пароля"
+                HorizontalAlignment="Stretch"
+                ValueChanged="SizeBar_Scroll"/>
+        <Grid ColumnDefinitions="*,*">
+            <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="5" HorizontalAlignment="Left">
+                <CheckBox x:Name="CheckBoxCapital" IsChecked="{Binding UseCapital}"
+                          Content="Заглавные"
+                          ToolTip.Tip="Включение заглавных букв в пароль (A-Z)"
+                          IsCheckedChanged="CheckBox_UseCapital_CheckedChanged"/>
+                <CheckBox x:Name="CheckBoxLower" IsChecked="{Binding UseLower}"
+                          Content="Строчные"
+                          ToolTip.Tip="Включение строчных букв в пароль (a-z)"
+                          IsCheckedChanged="CheckBox_UseLower_CheckedChanged"/>
+                <CheckBox x:Name="CheckBoxNumber" IsChecked="{Binding UseNumber}"
+                          Content="Цифры"
+                          ToolTip.Tip="Включение цифр в пароль"
+                          IsCheckedChanged="CheckBox_UseNumber_CheckedChanged"/>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Vertical" Spacing="5" HorizontalAlignment="Right">
+                <CheckBox x:Name="CheckBoxLine" IsChecked="{Binding UseLine}"
+                          Content="Подчёркивание"
+                          ToolTip.Tip="Символы `-` и `_`"
+                          IsCheckedChanged="CheckBox_UseLine_CheckedChanged"/>
+                <CheckBox x:Name="CheckBoxSpecial" IsChecked="{Binding UseSpecial}"
+                          Content="Символы"
+                          ToolTip.Tip="Разные специальные символы"
+                          IsCheckedChanged="CheckBox_UseSpecial_CheckedChanged"/>
+                <CheckBox x:Name="CheckBoxForce" IsChecked="{Binding ForceEachType}"
+                          Content="Не менее 1"
+                          ToolTip.Tip="В пароле будет не менее одного символа из каждой отмеченной категории"
+                          IsCheckedChanged="CheckBox_ForceEachType_CheckedChanged"/>
+            </StackPanel>
+        </Grid>
+        <CheckBox x:Name="CheckBoxReadable" IsChecked="{Binding ForceReadable}"
+                  Content="Улучшить читаемость пароля"
+                  ToolTip.Tip="В пароле не будут попадаться символы, которые легко спутать (например, 0 и O или l и I)"
+                  IsCheckedChanged="CheckBox_ForceReadable_CheckedChanged"/>
+    </StackPanel>
+</Window>
