@@ -1,7 +1,5 @@
-using System;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using PassGenNewUI.Models;
 using PassGenNewUI.Services;
 using PassGenNewUI.ViewModels;
 

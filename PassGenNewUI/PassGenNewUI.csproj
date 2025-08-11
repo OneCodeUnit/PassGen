@@ -7,12 +7,27 @@
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <AssemblyName>PassGen</AssemblyName>
+        <IsPackable>false</IsPackable>
+        <PackageId>PassGen</PackageId>
+        <Version>1.4.0</Version>
+        <Authors>OliveWizard</Authors>
+        <PackageIcon>Assets\Logo.png</PackageIcon>
+        <Company>OliveWizard</Company>
+        <Product>PassGen</Product>
+        <AssemblyVersion>1.4.0</AssemblyVersion>
+        <FileVersion>1.4.0</FileVersion>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <DebugType>embedded</DebugType>
     </PropertyGroup>
 
     <ItemGroup>
         <AvaloniaResource Include="Assets\**"/>
         <None Remove="Assets\Copy.png" />
         <AvaloniaResource Include="Assets\Copy.png" />
+        <AvaloniaResource Remove="publish\**" />
+        <None Remove="publish\**" />
     </ItemGroup>
 
     <ItemGroup>
@@ -28,10 +43,30 @@
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1"/>
     </ItemGroup>
 
+    <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'osx-x64' Or '$(RuntimeIdentifier)' == 'osx-arm64'">
+        <DefineConstants>MACOS</DefineConstants>
+    </PropertyGroup>
+
     <ItemGroup>
       <None Update="Assets\Logo.png">
         <Pack>True</Pack>
         <PackagePath>/</PackagePath>
       </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <AvaloniaXaml Remove="publish\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="publish\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="publish\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Remove="publish\**" />
     </ItemGroup>
 </Project>
