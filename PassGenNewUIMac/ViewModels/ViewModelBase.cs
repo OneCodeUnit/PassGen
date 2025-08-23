@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace PassGenNewUI.ViewModels;
+namespace PassGenNewUIMac.ViewModels;
 
 public class ViewModelBase : ObservableObject
 {

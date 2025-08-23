@@ -1,8 +1,8 @@
 using System;
 using System.Security.Cryptography;
-using PassGenNewUI.Models;
+using PassGenNewUIMac.Models;
 
-namespace PassGenNewUI.Services;
+namespace PassGenNewUIMac.Services;
 
 public static class PasswordGeneratorService
 {

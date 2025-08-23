@@ -1,4 +1,4 @@
-namespace PassGenNewUI.Models;
+namespace PassGenNewUIMac.Models;
 
 public class PasswordOptions(
     bool useCapital,

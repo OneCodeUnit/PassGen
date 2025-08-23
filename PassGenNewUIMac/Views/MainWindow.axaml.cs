@@ -1,9 +1,9 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using PassGenNewUI.Services;
-using PassGenNewUI.ViewModels;
+using PassGenNewUIMac.Services;
+using PassGenNewUIMac.ViewModels;
 
-namespace PassGenNewUI.Views;
+namespace PassGenNewUIMac.Views;
 
 public partial class MainWindow : Window
 {

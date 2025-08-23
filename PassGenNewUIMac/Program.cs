@@ -1,7 +1,7 @@
 ﻿using Avalonia;
 using System;
 
-namespace PassGenNewUI;
+namespace PassGenNewUIMac;
 
 sealed class Program
 {

@@ -1,9 +1,9 @@
 using System;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using PassGenNewUI.ViewModels;
+using PassGenNewUIMac.ViewModels;
 
-namespace PassGenNewUI;
+namespace PassGenNewUIMac;
 
 public class ViewLocator : IDataTemplate
 {

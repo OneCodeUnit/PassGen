@@ -3,10 +3,10 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using System.Linq;
 using Avalonia.Markup.Xaml;
-using PassGenNewUI.ViewModels;
-using PassGenNewUI.Views;
+using PassGenNewUIMac.ViewModels;
+using PassGenNewUIMac.Views;
 
-namespace PassGenNewUI;
+namespace PassGenNewUIMac;
 
 public partial class App : Application
 {

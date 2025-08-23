@@ -1,8 +1,8 @@
 ﻿using System;
 using CommunityToolkit.Mvvm.ComponentModel;
-using PassGenNewUI.Models;
+using PassGenNewUIMac.Models;
 
-namespace PassGenNewUI.ViewModels;
+namespace PassGenNewUIMac.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase
 {

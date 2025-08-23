@@ -52,6 +52,10 @@
     <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'osx-x64' Or '$(RuntimeIdentifier)' == 'osx-arm64'">
         <DefineConstants>MACOS</DefineConstants>
     </PropertyGroup>
+    
+    <PropertyGroup>
+        <ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
+    </PropertyGroup>
 
     <ItemGroup>
       <None Update="Assets\Logo.png">

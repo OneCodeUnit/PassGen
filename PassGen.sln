@@ -5,7 +5,7 @@ VisualStudioVersion = 17.7.34202.233
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PassGen", "PassGen.csproj", "{8FFFD025-20AC-4476-8907-0466AC6B9DF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassGenNewUI", "PassGenNewUI\PassGenNewUI.csproj", "{3EF1814D-3298-4DC8-AC5C-37821235EFCA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassGenNewUIMac", "PassGenNewUIMac\PassGenNewUIMac.csproj", "{3EF1814D-3298-4DC8-AC5C-37821235EFCA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassGenNewUIWindows", "PassGenNewUIWindows\PassGenNewUIWindows.csproj", "{7F7D035B-FAA1-4C3B-BF61-88A30A90B099}"
 EndProject
