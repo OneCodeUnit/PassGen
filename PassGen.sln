@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PassGen", "PassGen.csproj",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassGenNewUI", "PassGenNewUI\PassGenNewUI.csproj", "{3EF1814D-3298-4DC8-AC5C-37821235EFCA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PassGenNewUIWindows", "PassGenNewUIWindows\PassGenNewUIWindows.csproj", "{7F7D035B-FAA1-4C3B-BF61-88A30A90B099}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{3EF1814D-3298-4DC8-AC5C-37821235EFCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3EF1814D-3298-4DC8-AC5C-37821235EFCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3EF1814D-3298-4DC8-AC5C-37821235EFCA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F7D035B-FAA1-4C3B-BF61-88A30A90B099}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F7D035B-FAA1-4C3B-BF61-88A30A90B099}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F7D035B-FAA1-4C3B-BF61-88A30A90B099}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F7D035B-FAA1-4C3B-BF61-88A30A90B099}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

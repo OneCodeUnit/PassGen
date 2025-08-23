@@ -48,6 +48,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Remove="PassGenNewUIWindows\**" />
     <Compile Remove="PassGenNewUI\**" />
   </ItemGroup>
 
@@ -56,6 +57,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Remove="PassGenNewUIWindows\**" />
     <EmbeddedResource Remove="PassGenNewUI\**" />
   </ItemGroup>
 
@@ -80,6 +82,7 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
+    <None Remove="PassGenNewUIWindows\**" />
     <None Remove="PassGenNewUI\**" />
   </ItemGroup>
 
@@ -89,6 +92,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <AvaloniaXaml Remove="PassGenNewUIWindows\**" />
     <AvaloniaXaml Remove="PassGenNewUI\**" />
   </ItemGroup>
 
