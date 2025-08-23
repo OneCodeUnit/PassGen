@@ -1,1 +1,1 @@
-dotnet publish PassGenNewUIMac.csproj -c Release -r osx-arm64 --self-contained true -o publish/build
+dotnet publish PassGenNewUIMac.csproj -c Release -r osx-arm64 -p:PublishSingleFile=true --self-contained true -o publish/build
