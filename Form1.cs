@@ -1,129 +1,60 @@
-using System.Security.Cryptography;
-
 namespace PassGen
 {
+    /// <summary>
+    /// Главная форма приложения для генерации паролей.
+    /// Предоставляет графический интерфейс для выбора параметров и генерации криптографически стойких паролей.
+    /// </summary>
     public partial class MainForm : Form
     {
-        string AlphabetCapital = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        string AlphabetLower = "abcdefghijklmnopqrstuvwxyz";
-        string AlphabetNumber = "0123456789";
-        const string AlphabetLine = "-_";
-        string AlphabetSpecial = "`~!@#$%^&*()+={}[]\\|:;\"\'<>,.?/";
-        string Password = string.Empty;
-        int PasswordLength = 12;
+        private readonly PasswordGenerator _passwordGenerator = new();
+        private string _password = string.Empty;
+        private int _passwordLength = 12;
 
+        /// <summary>
+        /// Генерирует новый пароль на основе текущих настроек пользовательского интерфейса.
+        /// В случае ошибки отображает сообщение об ошибке в поле пароля.
+        /// </summary>
+        /// <remarks>
+        /// Метод собирает параметры из элементов управления формы, вызывает генератор паролей
+        /// и обновляет поле отображения. Все исключения обрабатываются, и их сообщения
+        /// выводятся пользователю вместо пароля.
+        /// </remarks>
         private void GeneratePassword()
         {
-            if (CheckBoxReadable.Checked)
+            var options = new PasswordGenerator.PasswordOptions(
+                Length: _passwordLength,
+                IncludeCapital: CheckBoxCapital.Checked,
+                IncludeLower: CheckBoxLower.Checked,
+                IncludeNumbers: CheckBoxNumber.Checked,
+                IncludeLine: CheckBoxLine.Checked,
+                IncludeSpecial: CheckBoxSpecial.Checked,
+                ForceCategories: CheckBoxForce.Checked,
+                Readable: CheckBoxReadable.Checked
+            );
+            try
             {
-                AlphabetCapital = "ABCDEFGHJKMNPQRSTUVWXYZ";
-                AlphabetLower = "abcdefghjkpqrstuvwxyz";
-                AlphabetSpecial = "@#$%+=?";
-                AlphabetNumber = "23456789";
+                _password = _passwordGenerator.Generate(options);
             }
-
-            string alphabet = string.Empty;
-            if (CheckBoxCapital.Checked) { alphabet += AlphabetCapital; }
-            if (CheckBoxLower.Checked) { alphabet += AlphabetLower; }
-            if (CheckBoxNumber.Checked) { alphabet += AlphabetNumber; }
-            if (CheckBoxLine.Checked) { alphabet += AlphabetLine; }
-            if (CheckBoxSpecial.Checked) { alphabet += AlphabetSpecial; }
-
-            int alphabetSize = alphabet.Length;
-            if (alphabetSize == 0)
+            catch (ArgumentException ex)
             {
-                FieldPassword.Text = string.Empty;
-                return;
+                _password = ex.Message;
             }
-
-            Password = string.Empty;
-            for (int i = 0; i < PasswordLength; i++)
+            finally
             {
-                int randomNumber = RandomNumberGenerator.GetInt32(0, alphabetSize);
-                string randomSymbol = alphabet[randomNumber].ToString();
-                Password += randomSymbol;
-            }
-
-            if (CheckBoxForce.Checked)
-            {
-                ForceAddition();
-            }
-
-            FieldPassword.Text = Password;
-        }
-
-        private void ForceAddition()
-        {
-            int checkedCount = 0;
-            if (CheckBoxCapital.Checked) { checkedCount++; }
-            if (CheckBoxLower.Checked) { checkedCount++; }
-            if (CheckBoxNumber.Checked) { checkedCount++; }
-            if (CheckBoxLine.Checked) { checkedCount++; }
-            if (CheckBoxSpecial.Checked) { checkedCount++; }
-
-            if (checkedCount > PasswordLength)
-            {
-                Password = string.Empty;
-                return;
-            }
-
-            string positions = string.Empty;
-            int position = 0;
-            int randomPosition;
-            for (int i = 0; i < checkedCount; i++)
-            {
-                do
-                {
-                    randomPosition = RandomNumberGenerator.GetInt32(0, PasswordLength);
-                }
-                while (positions.Contains(randomPosition.ToString()));
-                positions += randomPosition;
-            }
-            if (CheckBoxCapital.Checked)
-            {
-                int randomNumber = RandomNumberGenerator.GetInt32(0, AlphabetCapital.Length);
-                string randomSymbol = AlphabetCapital[randomNumber].ToString();
-                Password = Password.Remove(Convert.ToInt32(positions[position].ToString()), 1);
-                Password = Password.Insert(Convert.ToInt32(positions[position].ToString()), randomSymbol);
-                position++;
-            }
-            if (CheckBoxLower.Checked)
-            {
-                int randomNumber = RandomNumberGenerator.GetInt32(0, AlphabetLower.Length);
-                string randomSymbol = AlphabetLower[randomNumber].ToString();
-                Password = Password.Remove(Convert.ToInt32(positions[position].ToString()), 1);
-                Password = Password.Insert(Convert.ToInt32(positions[position].ToString()), randomSymbol);
-                position++;
-            }
-            if (CheckBoxNumber.Checked)
-            {
-                int randomNumber = RandomNumberGenerator.GetInt32(0, AlphabetNumber.Length);
-                string randomSymbol = AlphabetNumber[randomNumber].ToString();
-                Password = Password.Remove(Convert.ToInt32(positions[position].ToString()), 1);
-                Password = Password.Insert(Convert.ToInt32(positions[position].ToString()), randomSymbol);
-                position++;
-            }
-            if (CheckBoxLine.Checked)
-            {
-                int randomNumber = RandomNumberGenerator.GetInt32(0, AlphabetLine.Length);
-                string randomSymbol = AlphabetLine[randomNumber].ToString();
-                Password = Password.Remove(Convert.ToInt32(positions[position].ToString()), 1);
-                Password = Password.Insert(Convert.ToInt32(positions[position].ToString()), randomSymbol);
-                position++;
-            }
-            if (CheckBoxSpecial.Checked)
-            {
-                int randomNumber = RandomNumberGenerator.GetInt32(0, AlphabetSpecial.Length);
-                string randomSymbol = AlphabetSpecial[randomNumber].ToString();
-                Password = Password.Remove(Convert.ToInt32(positions[position].ToString()), 1);
-                Password = Password.Insert(Convert.ToInt32(positions[position].ToString()), randomSymbol);
+                FieldPassword.Text = _password;
             }
         }
 
+        /// <summary>
+        /// Инициализирует новый экземпляр формы MainForm.
+        /// Настраивает начальное состояние UI и создает всплывающие подсказки для элементов управления.
+        /// </summary>
         public MainForm()
         {
             InitializeComponent();
             GeneratePassword();
+
+            // Инициализация всплывающих подсказок
             ToolTip toolTip = new();
             toolTip.SetToolTip(CheckBoxLine, "Символы \"-\" и \"_\"");
             toolTip.SetToolTip(CheckBoxSpecial, "Разные специальные символы");
@@ -136,29 +67,76 @@ namespace PassGen
             toolTip.SetToolTip(SizeBar, "Двигая влево и вправо, можно изменить длину пароля");
             toolTip.SetToolTip(LabelScrollValue, "Текущая длина пароля");
             toolTip.SetToolTip(ButtonGen, "Создать новый пароль");
-            toolTip.SetToolTip(FieldPassword, "Созданные пароли. Если поле пустое, значит выбранные настройки не позволяют создать его");
+            toolTip.SetToolTip(FieldPassword, "Созданные пароли. Нажми, чтобы скопировать");
         }
 
+        /// <summary>
+        /// Обработчик нажатия кнопки "Создать".
+        /// Запускает генерацию нового пароля.
+        /// </summary>
+        /// <param name="sender">Источник события (кнопка ButtonGen).</param>
+        /// <param name="e">Данные события.</param>
         private void ButtonGen_Click(object sender, EventArgs e)
         {
             GeneratePassword();
         }
 
+        /// <summary>
+        /// Обработчик изменения состояния чекбоксов категорий символов.
+        /// Автоматически перегенерирует пароль при изменении настроек.
+        /// </summary>
+        /// <param name="sender">Источник события (любой из чекбоксов).</param>
+        /// <param name="e">Данные события.</param>
         private void CheckBox_CheckedChanged(object sender, EventArgs e)
         {
             GeneratePassword();
         }
 
+        /// <summary>
+        /// Обработчик нажатия кнопки "Копировать".
+        /// Копирует текущий пароль в буфер обмена Windows.
+        /// </summary>
+        /// <param name="sender">Источник события (кнопка ButtonCopy).</param>
+        /// <param name="e">Данные события.</param>
+        /// <remarks>
+        /// Копирование выполняется только если пароль не пустой.
+        /// </remarks>
         private void ButtonCopy_Click(object sender, EventArgs e)
         {
-            Clipboard.SetText(Password);
+            if (!string.IsNullOrEmpty(_password))
+            {
+                Clipboard.SetText(_password);
+            }
         }
 
+        /// <summary>
+        /// Обработчик изменения позиции ползунка длины пароля.
+        /// Обновляет длину пароля и автоматически генерирует новый пароль.
+        /// </summary>
+        /// <param name="sender">Источник события (TrackBar SizeBar).</param>
+        /// <param name="e">Данные события.</param>
         private void SizeBar_Scroll(object sender, EventArgs e)
         {
-            PasswordLength = SizeBar.Value;
-            LabelScrollValue.Text = "Длина пароля: " + PasswordLength;
+            _passwordLength = SizeBar.Value;
+            LabelScrollValue.Text = "Длина пароля: " + _passwordLength;
             GeneratePassword();
+        }
+
+        /// <summary>
+        /// Обработчик нажатия на поле с паролем.
+        /// Копирует текущий пароль в буфер обмена Windows.
+        /// </summary>
+        /// <param name="sender">Источник события (поле FieldPassword).</param>
+        /// <param name="e">Данные события.</param>
+        /// <remarks>
+        /// Копирование выполняется только если пароль не пустой.
+        /// </remarks>
+        private void FieldPassword_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(_password))
+            {
+                Clipboard.SetText(_password);
+            }
         }
     }
 }
