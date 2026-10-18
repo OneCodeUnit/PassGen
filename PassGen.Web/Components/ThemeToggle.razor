@@ -1,0 +1,27 @@
+@inject IJSRuntime JS
+
+<button type="button" class="btn btn-ghost theme-toggle" @onclick="Cycle" title="@Hint" aria-label="@Hint">
+    <Icon Name="@IconName" />
+    <span class="theme-toggle-label">@Label</span>
+</button>
+
+@code {
+    private string _theme = "auto";
+
+    private string IconName => _theme switch { "light" => "sun", "dark" => "moon", _ => "monitor" };
+    private string Label => _theme switch { "light" => "Светлая", "dark" => "Тёмная", _ => "Авто" };
+    private string Hint => $"Тема: {Label.ToLowerInvariant()}. Нажмите, чтобы сменить";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        _theme = await JS.InvokeAsync<string>("passgen.getTheme");
+        StateHasChanged();
+    }
+
+    private async Task Cycle()
+    {
+        _theme = _theme switch { "auto" => "light", "light" => "dark", _ => "auto" };
+        await JS.InvokeVoidAsync("passgen.setTheme", _theme);
+    }
+}

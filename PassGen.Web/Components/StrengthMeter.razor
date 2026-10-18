@@ -1,0 +1,20 @@
+@using PassGen.Web.Services
+
+<div class="strength" data-level="@Info.Level.ToString().ToLowerInvariant()">
+    <div class="meter" aria-hidden="true">
+        <span style="width:@Percent%"></span>
+    </div>
+    <p class="strength-text" role="status">
+        Стойкость: <strong>@Info.Label</strong>
+        @if (Info.Level != StrengthLevel.None)
+        {
+            <span class="muted"> · @Info.Bits.ToString("0") бит энтропии</span>
+        }
+    </p>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public StrengthInfo Info { get; set; }
+
+    private string Percent => (Info.Fraction * 100).ToString("0", System.Globalization.CultureInfo.InvariantCulture);
+}

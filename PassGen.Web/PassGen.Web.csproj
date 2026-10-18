@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
+    <RootNamespace>PassGen.Web</RootNamespace>
+    <Title>PassGen Online</Title>
+    <Authors>OliveWizard</Authors>
+    <Description>Онлайн-генератор паролей</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.13" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.13" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Общая логика генерации с десктопной версией -->
+    <Compile Include="..\PasswordGenerator.cs" Link="Shared\PasswordGenerator.cs" />
+  </ItemGroup>
+
+</Project>

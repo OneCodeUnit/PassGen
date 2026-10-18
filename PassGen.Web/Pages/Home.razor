@@ -1,0 +1,252 @@
+﻿@page "/"
+@page "/{*Path}"
+@using PassGen.Web.Services
+@implements IDisposable
+@inject IJSRuntime JS
+
+<PageTitle>PassGen — генератор паролей онлайн</PageTitle>
+
+<div class="layout">
+    <section class="card result" aria-labelledby="result-title">
+        <h2 id="result-title" class="card-title">Ваш пароль</h2>
+
+        <div class="password-box">
+            @if (_error is null)
+            {
+                <button type="button" class="password" @onclick="CopyCurrent" title="Нажмите, чтобы скопировать"
+                        aria-label="Скопировать пароль">
+                    <PasswordText Value="@_password" Hidden="@_hidden" />
+                </button>
+            }
+            else
+            {
+                <p class="password-error" role="alert">@_error</p>
+            }
+            <div class="password-actions">
+                <button type="button" class="icon-btn" @onclick="ToggleHidden" disabled="@(_error is not null)"
+                        aria-pressed="@(_hidden ? "true" : "false")" title="@(_hidden ? "Показать пароль" : "Скрыть пароль")"
+                        aria-label="@(_hidden ? "Показать пароль" : "Скрыть пароль")">
+                    <Icon Name="@(_hidden ? "eye" : "eye-off")" />
+                </button>
+                <button type="button" class="icon-btn" @onclick="CopyCurrent" disabled="@(_error is not null)"
+                        title="Скопировать в буфер обмена" aria-label="Скопировать в буфер обмена">
+                    <Icon Name="@(_copied ? "check" : "copy")" />
+                </button>
+            </div>
+        </div>
+
+        <StrengthMeter Info="_strength" />
+
+        <button type="button" class="btn btn-primary btn-lg" @onclick="GenerateNew" disabled="@(_error is not null)">
+            <Icon Name="refresh" /> Новый пароль
+        </button>
+
+        <div class="length">
+            <div class="length-head">
+                <label for="length">Длина пароля</label>
+                <output for="length" class="length-value">@_length</output>
+            </div>
+            <div class="length-control">
+                <button type="button" class="icon-btn" @onclick="() => Length--" disabled="@(_length <= MinLength)"
+                        aria-label="Уменьшить длину"><Icon Name="minus" /></button>
+                <input id="length" type="range" min="@MinLength" max="@MaxLength" step="1" value="@_length"
+                       style="--fill:@LengthFill%" @oninput="OnLengthInput" />
+                <button type="button" class="icon-btn" @onclick="() => Length++" disabled="@(_length >= MaxLength)"
+                        aria-label="Увеличить длину"><Icon Name="plus" /></button>
+            </div>
+        </div>
+    </section>
+
+    <section class="card settings" aria-labelledby="settings-title">
+        <h2 id="settings-title" class="card-title">Символы</h2>
+        <div class="options">
+            <OptionSwitch Title="Заглавные" Hint="A–Z" @bind-Value="Capital" />
+            <OptionSwitch Title="Строчные" Hint="a–z" @bind-Value="Lower" />
+            <OptionSwitch Title="Цифры" Hint="0–9" @bind-Value="Numbers" />
+            <OptionSwitch Title="Подчёркивание" Hint="- и _" @bind-Value="Line" />
+            <OptionSwitch Title="Символы" Hint="! @@ # $ % и другие" @bind-Value="Special" />
+        </div>
+
+        <h2 class="card-title extra-title">Дополнительно</h2>
+        <div class="options">
+            <OptionSwitch Title="Не менее 1" Hint="Минимум один символ из каждой выбранной категории" @bind-Value="Force" />
+            <OptionSwitch Title="Улучшить читаемость" Hint="Без похожих символов: 0 и O, 1, l и I" @bind-Value="Readable" />
+        </div>
+    </section>
+
+    <section class="card history" aria-labelledby="history-title">
+        <div class="card-head">
+            <h2 id="history-title" class="card-title">История</h2>
+            @if (_history.Count > 0)
+            {
+                <button type="button" class="btn btn-ghost btn-sm" @onclick="ClearHistory">
+                    <Icon Name="trash" Size="16" /> Очистить
+                </button>
+            }
+        </div>
+        @if (_history.Count == 0)
+        {
+            <p class="muted empty">Здесь появятся пароли, которые вы скопировали или заменили новыми. История хранится только в этой вкладке и пропадёт при её закрытии.</p>
+        }
+        else
+        {
+            <ul class="history-list">
+                @foreach (var item in _history)
+                {
+                    <li>
+                        <span class="history-pw"><PasswordText Value="@item" Hidden="@_hidden" /></span>
+                        <button type="button" class="icon-btn" @onclick="() => CopyAsync(item)"
+                                title="Скопировать" aria-label="Скопировать пароль из истории">
+                            <Icon Name="copy" Size="18" />
+                        </button>
+                    </li>
+                }
+            </ul>
+        }
+    </section>
+</div>
+
+<div class="toast" role="status" aria-live="polite" data-visible="@(_toast is not null)">@_toast</div>
+
+@code {
+    private const int MinLength = 6;
+    private const int MaxLength = 64;
+    private const int HistoryLimit = 10;
+
+    private readonly PasswordGenerator _generator = new();
+    private readonly List<string> _history = [];
+    private CancellationTokenSource? _toastCts;
+
+    private int _length = 12;
+    private bool _capital = true, _lower = true, _numbers = true, _line, _special, _force = true, _readable = true;
+    private string _password = "";
+    private string? _error;
+    private StrengthInfo _strength;
+    private bool _hidden;
+    private bool _copied;
+    private string? _toast;
+
+    [Parameter] public string? Path { get; set; }
+
+    private bool Capital { get => _capital; set { _capital = value; Regenerate(); } }
+    private bool Lower { get => _lower; set { _lower = value; Regenerate(); } }
+    private bool Numbers { get => _numbers; set { _numbers = value; Regenerate(); } }
+    private bool Line { get => _line; set { _line = value; Regenerate(); } }
+    private bool Special { get => _special; set { _special = value; Regenerate(); } }
+    private bool Force { get => _force; set { _force = value; Regenerate(); } }
+    private bool Readable { get => _readable; set { _readable = value; Regenerate(); } }
+
+    private int Length
+    {
+        get => _length;
+        set { _length = Math.Clamp(value, MinLength, MaxLength); Regenerate(); }
+    }
+
+    private string LengthFill =>
+        ((_length - MinLength) * 100.0 / (MaxLength - MinLength)).ToString("0.##", System.Globalization.CultureInfo.InvariantCulture);
+
+    protected override void OnInitialized() => Regenerate();
+
+    private void Regenerate()
+    {
+        var options = new PasswordGenerator.PasswordOptions(
+            Length: _length,
+            IncludeCapital: _capital,
+            IncludeLower: _lower,
+            IncludeNumbers: _numbers,
+            IncludeLine: _line,
+            IncludeSpecial: _special,
+            ForceCategories: _force,
+            Readable: _readable);
+
+        _copied = false;
+
+        // Сообщения исключений в WebAssembly урезаны (ресурсы строк), поэтому текст ошибок свой
+        if (!(_capital || _lower || _numbers || _line || _special))
+        {
+            SetError("Выберите хотя бы одну категорию символов");
+            return;
+        }
+
+        try
+        {
+            _password = _generator.Generate(options);
+            _error = null;
+            _strength = PasswordStrength.Evaluate(_length, _generator.GetAlphabetSize(options));
+        }
+        catch (ArgumentException)
+        {
+            SetError("Не удалось создать пароль с такими настройками");
+        }
+    }
+
+    private void SetError(string message)
+    {
+        _password = "";
+        _error = message;
+        _strength = default;
+    }
+
+    private void OnLengthInput(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var value))
+            Length = value;
+    }
+
+    private void GenerateNew()
+    {
+        AddToHistory(_password);
+        Regenerate();
+    }
+
+    private void ToggleHidden() => _hidden = !_hidden;
+
+    private async Task CopyCurrent()
+    {
+        if (_error is not null) return;
+        if (await CopyAsync(_password))
+            _copied = true;
+    }
+
+    private async Task<bool> CopyAsync(string text)
+    {
+        var ok = await JS.InvokeAsync<bool>("passgen.copy", text);
+        if (ok) AddToHistory(text);
+        _ = ShowToast(ok ? "Скопировано в буфер обмена" : "Не удалось скопировать — выделите пароль вручную");
+        return ok;
+    }
+
+    private void AddToHistory(string password)
+    {
+        if (string.IsNullOrEmpty(password)) return;
+        _history.Remove(password);
+        _history.Insert(0, password);
+        if (_history.Count > HistoryLimit)
+            _history.RemoveRange(HistoryLimit, _history.Count - HistoryLimit);
+    }
+
+    private void ClearHistory() => _history.Clear();
+
+    private async Task ShowToast(string message)
+    {
+        _toastCts?.Cancel();
+        _toastCts = new CancellationTokenSource();
+        var token = _toastCts.Token;
+
+        _toast = message;
+        StateHasChanged();
+        try
+        {
+            await Task.Delay(2200, token);
+            _toast = null;
+            _copied = false;
+            StateHasChanged();
+        }
+        catch (TaskCanceledException)
+        {
+            // показано более новое уведомление
+        }
+    }
+
+    public void Dispose() => _toastCts?.Cancel();
+}

@@ -51,6 +51,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Remove="PassGen.Tests\**" />
+    <Compile Remove="PassGen.Web\**" />
     <Compile Remove="PassGenNewUIWindows\**" />
     <Compile Remove="PassGenNewUI\**" />
   </ItemGroup>
@@ -61,6 +62,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Remove="PassGen.Tests\**" />
+    <EmbeddedResource Remove="PassGen.Web\**" />
     <EmbeddedResource Remove="PassGenNewUIWindows\**" />
     <EmbeddedResource Remove="PassGenNewUI\**" />
   </ItemGroup>
@@ -87,6 +89,7 @@
       <PackagePath>\</PackagePath>
     </None>
     <None Remove="PassGen.Tests\**" />
+    <None Remove="PassGen.Web\**" />
     <None Remove="PassGenNewUIWindows\**" />
     <None Remove="PassGenNewUI\**" />
   </ItemGroup>

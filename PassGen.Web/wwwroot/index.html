@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="Онлайн-генератор надёжных паролей. Пароли создаются в вашем браузере и никуда не отправляются." />
+    <meta name="color-scheme" content="light dark" />
+    <title>PassGen — генератор паролей онлайн</title>
+    <base href="/" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="preload" id="webassembly" />
+    <link rel="stylesheet" href="css/app.css" />
+    <!-- Тема применяется до отрисовки, чтобы не было вспышки -->
+    <script src="js/passgen.js"></script>
+    <script type="importmap"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div class="boot" role="status" aria-label="Загрузка"><span class="boot-spinner"></span></div>
+    </div>
+
+    <noscript><p class="noscript">Для работы генератора нужен включённый JavaScript.</p></noscript>
+
+    <div id="blazor-error-ui">
+        Произошла ошибка.
+        <a href="." class="reload">Перезагрузить</a>
+        <span class="dismiss">🗙</span>
+    </div>
+    <script src="_framework/blazor.webassembly#[.{fingerprint}].js"></script>
+</body>
+
+</html>

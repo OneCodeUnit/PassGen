@@ -1,0 +1,19 @@
+<label class="option">
+    <span class="option-text">
+        <span class="option-title">@Title</span>
+        @if (!string.IsNullOrEmpty(Hint))
+        {
+            <span class="option-hint">@Hint</span>
+        }
+    </span>
+    <input type="checkbox" role="switch" class="switch" checked="@Value" @onchange="OnChange" />
+</label>
+
+@code {
+    [Parameter, EditorRequired] public string Title { get; set; } = "";
+    [Parameter] public string? Hint { get; set; }
+    [Parameter] public bool Value { get; set; }
+    [Parameter] public EventCallback<bool> ValueChanged { get; set; }
+
+    private Task OnChange(ChangeEventArgs e) => ValueChanged.InvokeAsync(e.Value is true);
+}

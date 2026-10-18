@@ -184,6 +184,14 @@ namespace PassGen
         }
 
         /// <summary>
+        /// Возвращает размер алфавита, из которого строится пароль с заданными параметрами.
+        /// Нужен для оценки энтропии: длина × log2(размер алфавита).
+        /// </summary>
+        /// <param name="options">Параметры генерации с указанием активных категорий.</param>
+        /// <returns>Количество символов в алфавите (0, если не выбрана ни одна категория).</returns>
+        public int GetAlphabetSize(PasswordOptions options) => BuildAlphabet(options).Length;
+
+        /// <summary>
         /// Параметры генерации пароля.
         /// </summary>
         /// <param name="Length">Длина пароля в символах (от 6 до 64).</param>
