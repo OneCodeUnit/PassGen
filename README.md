@@ -32,6 +32,17 @@ dotnet run --project PassGen.Web
 ```
 Результат публикации - обычные статические файлы, их можно разместить на любом хостинге (GitHub Pages, Nginx, Netlify и т.д.). Если сайт лежит не в корне домена, нужно поменять `<base href="/" />` в `PassGen.Web/wwwroot/index.html`.
 
+### Запуск через Docker
+Образ собирает сайт и раздаёт готовую статику через nginx (порт 8080, без прав root, с CSP и заголовками безопасности):
+```
+docker compose up --build
+```
+Сайт откроется на http://localhost:8080. Без compose:
+```
+docker build -t passgen-web .
+docker run --rm -p 8080:8080 passgen-web
+```
+
 ## Безопасность
 
 ### Криптографическая стойкость
