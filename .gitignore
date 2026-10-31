@@ -363,3 +363,6 @@ MigrationBackup/
 FodyWeavers.xsd
 .DS_Store
 /.idea
+
+# Локальные настройки docker compose (шаблон - .env.example)
+.env
