@@ -5,13 +5,16 @@
 #                  127.0.0.1    - обратный прокси (Caddy) запущен на самом сервере
 #                  192.168.1.101 - Caddy работает в Docker или на другой машине в сети
 #   PASSGEN_PORT - порт на хосте (по умолчанию 8080)
+#   PASSGEN_IMAGE - образ (по умолчанию ghcr.io/onecodeunit/passgen:latest)
 
 services:
   passgen-web:
+    # Готовый образ собирает и публикует GitHub Actions (.github/workflows/docker-publish.yml).
+    # Чтобы собрать из исходников: docker compose up -d --build
+    image: ${PASSGEN_IMAGE:-ghcr.io/onecodeunit/passgen:latest}
     build:
       context: .
       dockerfile: Dockerfile
-    image: passgen-web:latest
     container_name: passgen-web
     restart: unless-stopped
     ports:
