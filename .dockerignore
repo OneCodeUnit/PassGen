@@ -1,0 +1,8 @@
+# В контекст сборки попадает только то, что нужно сайту
+*
+!PasswordGenerator.cs
+!PassGen.Web/**
+!docker/**
+
+PassGen.Web/bin
+PassGen.Web/obj

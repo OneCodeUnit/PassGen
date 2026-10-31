@@ -1,0 +1,33 @@
+# Caddy внутри контейнера только раздаёт статические файлы по HTTP.
+# HTTPS и домен обрабатывает внешний обратный прокси.
+{
+	admin off
+	auto_https off
+}
+
+:8080 {
+	root * /srv
+
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy no-referrer
+		X-Frame-Options DENY
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		-Server
+	}
+
+	# Файлы _framework имеют хеш в имени - кэшируем надолго,
+	# остальное (index.html, css, js) всегда сверяем с сервером
+	@framework path /_framework/*
+	header @framework Cache-Control "public, max-age=31536000, immutable"
+	@other not path /_framework/*
+	header @other Cache-Control "no-cache"
+
+	# Переход на index.html для всех путей, кроме _framework
+	try_files @other {path} /index.html
+
+	# Blazor публикует готовые .br и .gz рядом с файлами
+	file_server {
+		precompressed br gzip
+	}
+}

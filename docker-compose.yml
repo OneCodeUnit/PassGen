@@ -1,0 +1,37 @@
+# Онлайн-версия PassGen (Blazor WebAssembly, статику раздаёт Caddy).
+# Параметры задаются переменными окружения или файлом .env рядом с compose-файлом.
+#
+#   PASSGEN_BIND - адрес хоста, на котором публикуется порт (по умолчанию 127.0.0.1).
+#                  127.0.0.1    - обратный прокси (Caddy) запущен на самом сервере
+#                  192.168.1.101 - Caddy работает в Docker или на другой машине в сети
+#   PASSGEN_PORT - порт на хосте (по умолчанию 8080)
+
+services:
+  passgen-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: passgen-web:latest
+    container_name: passgen-web
+    restart: unless-stopped
+    ports:
+      - "${PASSGEN_BIND:-127.0.0.1}:${PASSGEN_PORT:-8080}:8080"
+    # Сайт статический: файловая система только для чтения, лишних прав нет.
+    # NET_BIND_SERVICE нужен только потому, что на бинарнике Caddy выставлена эта
+    # capability - без неё при cap_drop: ALL контейнер не запустится.
+    read_only: true
+    tmpfs:
+      - /data
+      - /config
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    # Если Caddy запущен в Docker и обращается к контейнеру по имени, раскомментируйте
+    # блок ниже (и уберите секцию ports) - сеть должна совпадать с сетью Caddy.
+    # networks:
+    #   - caddy
+
+# networks:
+#   caddy:
+#     external: true
