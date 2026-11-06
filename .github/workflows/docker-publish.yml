@@ -26,9 +26,12 @@ jobs:
       # В корне лежат и .sln, и .csproj - решение указываем явно
       - run: dotnet test PassGen.sln --configuration Release
 
+      - name: Verify web Release publication
+        run: dotnet publish PassGen.Web/PassGen.Web.csproj --configuration Release
+
   publish:
     needs: test
-    # В пулл-реквестах образ не публикуем — только прогоняем тесты.
+    # В пулл-реквестах проверяем тесты и веб-публикацию, образ не публикуем.
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:

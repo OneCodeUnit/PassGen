@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 
 namespace PassGen.Tests;
 
@@ -90,56 +90,26 @@ public class SecurityTests
     }
 
     [Theory]
-    [InlineData(6)]
-    [InlineData(12)]
-    [InlineData(16)]
-    [InlineData(32)]
-    public void Generate_DoesNotProduceObviousPatterns(int length)
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Generate_RespectsAlphabetAndRequiredCategories(bool force)
     {
-        // Arrange
-        var options = new PasswordGenerator.PasswordOptions(
-            Length: length,
-            IncludeCapital: true,
-            IncludeLower: true,
-            IncludeNumbers: true,
-            IncludeLine: false,
-            IncludeSpecial: false,
-            ForceCategories: false,
-            Readable: false
-        );
-
-        // Act
-        string password = _generator.Generate(options);
-
-        // Assert - не должно быть очевидных паттернов
-        password.Should().NotMatchRegex("(.)\\1{3,}", "не должно быть 4+ одинаковых символов подряд");
-        password.Should().NotBe("aaaaaa", "не должен генерировать повторяющиеся символы");
-        password.Should().NotBe("123456", "не должен генерировать последовательности");
-        password.Should().NotMatchRegex("^[A-Z]+$|^[a-z]+$|^[0-9]+$", "должно быть разнообразие");
-    }
-
-    [Fact]
-    public void Generate_WithForceCategories_MaintainsRandomness()
-    {
-        // Arrange
-        var options = new PasswordGenerator.PasswordOptions(
-            Length: 20,
-            IncludeCapital: true,
-            IncludeLower: true,
-            IncludeNumbers: true,
-            IncludeLine: false,
-            IncludeSpecial: false,
-            ForceCategories: true,
-            Readable: false
-        );
-
-        // Act
-        var passwords = Enumerable.Range(0, 100)
-            .Select(_ => _generator.Generate(options))
-            .ToList();
-
-        // Assert - позиции обязательных символов должны различаться
-        var firstCharTypes = passwords.Select(p => char.IsUpper(p[0])).Distinct().Count();
-        firstCharTypes.Should().BeGreaterThan(1, "первый символ не должен всегда быть из одной категории");
+        var options = new PasswordGenerator.PasswordOptions(6, true, true, true, true, true, force, false);
+        const string special = "`~!@#$%^&*()+={}[]\\|:;\"'<>,.?/";
+        foreach (var length in new[] { 6, 16, 64 })
+        for (int i = 0; i < 100; i++)
+        {
+            var password = _generator.Generate(options with { Length = length });
+            password.Should().HaveLength(length);
+            password.ToCharArray().Should().OnlyContain(c => char.IsAsciiLetterOrDigit(c) || "-_".Contains(c) || special.Contains(c));
+            if (force)
+            {
+                password.ToCharArray().Should().Contain(c => char.IsAsciiLetterUpper(c));
+                password.ToCharArray().Should().Contain(c => char.IsAsciiLetterLower(c));
+                password.ToCharArray().Should().Contain(c => char.IsAsciiDigit(c));
+                password.ToCharArray().Should().Contain(c => "-_".Contains(c));
+                password.ToCharArray().Should().Contain(c => special.Contains(c));
+            }
+        }
     }
 }

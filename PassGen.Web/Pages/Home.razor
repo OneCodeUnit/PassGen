@@ -1,4 +1,4 @@
-﻿@page "/"
+@page "/"
 @page "/{*Path}"
 @using PassGen.Web.Services
 @implements IDisposable
@@ -106,7 +106,7 @@
     </section>
 </div>
 
-<div class="toast" role="status" aria-live="polite" data-visible="@(_toast is not null)">@_toast</div>
+<div class="toast" role="status" aria-live="polite" data-visible="@(_toast is not null ? "true" : "false")">@_toast</div>
 
 @code {
     private const int MinLength = 6;
@@ -123,7 +123,8 @@
     private string? _error;
     private StrengthInfo _strength;
     private bool _hidden;
-    private bool _copied;
+    private readonly PasswordCopyState _copyState = new();
+    private bool _copied => _copyState.IsCopied;
     private string? _toast;
 
     [Parameter] public string? Path { get; set; }
@@ -159,7 +160,7 @@
             ForceCategories: _force,
             Readable: _readable);
 
-        _copied = false;
+        _copyState.PasswordChanged();
 
         // Сообщения исключений в WebAssembly урезаны (ресурсы строк), поэтому текст ошибок свой
         if (!(_capital || _lower || _numbers || _line || _special))
@@ -172,7 +173,7 @@
         {
             _password = _generator.Generate(options);
             _error = null;
-            _strength = PasswordStrength.Evaluate(_length, _generator.GetAlphabetSize(options));
+            _strength = PasswordStrength.Evaluate(options);
         }
         catch (ArgumentException)
         {
@@ -204,8 +205,7 @@
     private async Task CopyCurrent()
     {
         if (_error is not null) return;
-        if (await CopyAsync(_password))
-            _copied = true;
+        await _copyState.CopyAsync(() => CopyAsync(_password));
     }
 
     private async Task<bool> CopyAsync(string text)
@@ -239,7 +239,7 @@
         {
             await Task.Delay(2200, token);
             _toast = null;
-            _copied = false;
+            _copyState.ClearIndicator();
             StateHasChanged();
         }
         catch (TaskCanceledException)

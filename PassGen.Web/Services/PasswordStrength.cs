@@ -30,13 +30,14 @@ public static class PasswordStrength
     private const double WeakBelowBits = 60;
     private const double StrongFromBits = 90;
 
-    /// <summary>Энтропия = длина × log2(размер алфавита).</summary>
-    public static StrengthInfo Evaluate(int length, int alphabetSize)
+    /// <summary>Учитывает обязательные категории и режим читаемости.</summary>
+    public static StrengthInfo Evaluate(PasswordGenerator.PasswordOptions options)
     {
-        if (length <= 0 || alphabetSize <= 1)
+        double bits = new PasswordGenerator().GetEntropy(options);
+        if (bits <= 0)
             return new StrengthInfo(StrengthLevel.None, 0);
 
-        double bits = length * Math.Log2(alphabetSize);
+
         var level = bits < WeakBelowBits ? StrengthLevel.Weak
             : bits < StrongFromBits ? StrengthLevel.Medium
             : StrengthLevel.Strong;

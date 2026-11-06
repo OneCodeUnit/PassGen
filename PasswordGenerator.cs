@@ -1,5 +1,6 @@
-﻿using System.Security.Cryptography;
-using System.Text;
+﻿using System.Numerics;
+using System.Security.Cryptography;
+
 
 namespace PassGen
 {
@@ -65,127 +66,72 @@ namespace PassGen
                     nameof(options.Length), 
                     "Длина пароля должна быть от 6 до 64"); 
             
-            var alphabet = BuildAlphabet(options);
-
+            var categories = GetCategories(options);
+            var alphabet = string.Concat(categories);
             Span<char> password = stackalloc char[options.Length];
-            for (int i = 0; i < options.Length; i++)
+            // Отбрасываем неподходящие кандидаты целиком: каждый допустимый пароль
+            // сохраняет одинаковую вероятность, обязательные позиции не перезаписываются.
+            bool accepted;
+            do
             {
-                int randomIndex = RandomNumberGenerator.GetInt32(0, alphabet.Length);
-                password[i] = alphabet[randomIndex];
-            }
-
-            if (options.ForceCategories)
-            {
-                List<char> selectedSymbols = SelectSymbols(options);
-                if (options.Length < selectedSymbols.Count)
-                {
-                    throw new ArgumentException(
-                        $"Выбрано слишком много категорий для длины ({options.Length})",
-                        nameof(options.Length));
-                }
-
-                List<int> selectedPositions = SelectPositions(options.Length, selectedSymbols.Count);
-
-                for (int i = 0; i < selectedPositions.Count; i++)
-                {
-                    password[selectedPositions[i]] = selectedSymbols[i];
-                }
-            }
-
+                for (int i = 0; i < password.Length; i++)
+                    password[i] = alphabet[RandomNumberGenerator.GetInt32(alphabet.Length)];
+                accepted = true;
+                if (options.ForceCategories)
+                    foreach (var category in categories)
+                        if (password.IndexOfAny(category.AsSpan()) < 0)
+                        {
+                            accepted = false;
+                            break;
+                        }
+            } while (!accepted);
             return new string(password);
         }
 
-        /// <summary>
-        /// Выбирает случайные уникальные позиции в пароле для вставки обязательных символов.
-        /// </summary>
-        /// <param name="passwordLength">Длина пароля.</param>
-        /// <param name="positionsCount">Количество позиций для выбора.</param>
-        /// <returns>Список уникальных индексов.</returns>
-        /// <exception cref="ArgumentException">
-        /// Выбрасывается, если количество позиций превышает длину пароля.
-        /// </exception>
-        private List<int> SelectPositions(int passwordLength, int positionsCount)
+        // Единый источник алфавитов для генерации и расчёта энтропии.
+        private static List<string> GetCategories(PasswordOptions options)
         {
-            if (positionsCount > passwordLength)
-                throw new ArgumentException("Количество позиций превышает длину пароля");
-            HashSet<int> selectedPositions = new(positionsCount);
-            while (selectedPositions.Count < positionsCount)
-                selectedPositions.Add(RandomNumberGenerator.GetInt32(0, passwordLength));
-
-            return [.. selectedPositions];
+            List<string> categories = [];
+            if (options.IncludeCapital) categories.Add(options.Readable ? AlphabetCapitalReadable : AlphabetCapitalDefault);
+            if (options.IncludeLower) categories.Add(options.Readable ? AlphabetLowerReadable : AlphabetLowerDefault);
+            if (options.IncludeNumbers) categories.Add(options.Readable ? AlphabetNumberReadable : AlphabetNumberDefault);
+            if (options.IncludeLine) categories.Add(options.Readable ? AlphabetLineReadable : AlphabetLineDefault);
+            if (options.IncludeSpecial) categories.Add(options.Readable ? AlphabetSpecialReadable : AlphabetSpecialDefault);
+            return categories;
         }
 
-        /// <summary>
-        /// Выбирает по одному случайному символу из каждой включённой категории.
-        /// </summary>
-        /// <param name="options">Параметры генерации с указанием активных категорий.</param>
-        /// <returns>Список символов для обязательного включения в пароль.</returns>
-        private List<char> SelectSymbols(PasswordOptions options)
+        private static string BuildAlphabet(PasswordOptions options) => string.Concat(GetCategories(options));
+
+        /// <summary>Энтропия равномерного распределения допустимых паролей, в битах.</summary>
+        public double GetEntropy(PasswordOptions options)
         {
-            List<char> selectedSymbols = [];
+            if (options.Length < 6 || options.Length > 64)
+                throw new ArgumentOutOfRangeException(nameof(options.Length));
+            var categories = GetCategories(options);
+            int size = categories.Sum(c => c.Length);
+            if (size == 0) return 0;
+            if (!options.ForceCategories) return options.Length * Math.Log2(size);
 
-            if (options.IncludeCapital)
-                selectedSymbols.Add(SelectSymbol(options.Readable, AlphabetCapitalReadable, AlphabetCapitalDefault));
-
-            if (options.IncludeLower)
-                selectedSymbols.Add(SelectSymbol(options.Readable, AlphabetLowerReadable, AlphabetLowerDefault));
-
-            if (options.IncludeNumbers)
-                selectedSymbols.Add(SelectSymbol(options.Readable, AlphabetNumberReadable, AlphabetNumberDefault));
-
-            if (options.IncludeLine)
-                selectedSymbols.Add(SelectSymbol(options.Readable, AlphabetLineReadable, AlphabetLineDefault));
-
-            if (options.IncludeSpecial)
-                selectedSymbols.Add(SelectSymbol(options.Readable, AlphabetSpecialReadable, AlphabetSpecialDefault));
-
-            return selectedSymbols;
+            // Включения-исключения по отсутствующим категориям. BigInteger исключает
+            // потерю точности при вычитании больших близких чисел (до 94^64).
+            BigInteger count = 0;
+            for (int mask = 0; mask < (1 << categories.Count); mask++)
+            {
+                int remaining = size, excluded = 0;
+                for (int i = 0; i < categories.Count; i++)
+                    if ((mask & (1 << i)) != 0)
+                    {
+                        remaining -= categories[i].Length;
+                        excluded++;
+                    }
+                var term = BigInteger.Pow(remaining, options.Length);
+                count += excluded % 2 == 0 ? term : -term;
+            }
+            return BigInteger.Log(count, 2);
         }
-
-        /// <summary>
-        /// Выбирает случайный символ из указанного алфавита.
-        /// </summary>
-        /// <param name="readable">Использовать режим улучшенной читаемости (исключает визуально похожие символы).</param>
-        /// <param name="alphabetReadable">Алфавит для режима улучшенной читаемости.</param>
-        /// <param name="alphabetDefault">Стандартный алфавит.</param>
-        /// <returns>Случайный символ из выбранного алфавита.</returns>
-        private static char SelectSymbol(bool readable, string alphabetReadable, string alphabetDefault)
-        {
-            string alphabet = readable ? alphabetReadable : alphabetDefault;
-            int index = RandomNumberGenerator.GetInt32(0, alphabet.Length);
-            return alphabet[index];
-        }
-
-        /// <summary>
-        /// Строит алфавит на основе выбранных категорий символов.
-        /// </summary>
-        /// <param name="options">Параметры генерации с указанием активных категорий.</param>
-        /// <returns>Строка, содержащая все символы из выбранных категорий.</returns>
-        private string BuildAlphabet(PasswordOptions options)
-        {
-            StringBuilder alphabet = new();
-
-            if (options.IncludeCapital)
-                alphabet.Append(options.Readable ? AlphabetCapitalReadable : AlphabetCapitalDefault);
-
-            if (options.IncludeLower)
-                alphabet.Append(options.Readable ? AlphabetLowerReadable : AlphabetLowerDefault);
-
-            if (options.IncludeNumbers)
-                alphabet.Append(options.Readable ? AlphabetNumberReadable : AlphabetNumberDefault);
-
-            if (options.IncludeLine)
-                alphabet.Append(options.Readable ? AlphabetLineReadable : AlphabetLineDefault);
-
-            if (options.IncludeSpecial)
-                alphabet.Append(options.Readable ? AlphabetSpecialReadable : AlphabetSpecialDefault);
-
-            return alphabet.ToString();
-        }
-
         /// <summary>
         /// Возвращает размер алфавита, из которого строится пароль с заданными параметрами.
-        /// Нужен для оценки энтропии: длина × log2(размер алфавита).
+        /// Для точной оценки энтропии используйте GetEntropy.
         /// </summary>
         /// <param name="options">Параметры генерации с указанием активных категорий.</param>
         /// <returns>Количество символов в алфавите (0, если не выбрана ни одна категория).</returns>

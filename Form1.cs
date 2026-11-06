@@ -8,6 +8,7 @@ namespace PassGen
     {
         private readonly PasswordGenerator _passwordGenerator = new();
         private string _password = string.Empty;
+        private string? _generationError;
         private int _passwordLength = 12;
 
         /// <summary>
@@ -34,14 +35,17 @@ namespace PassGen
             try
             {
                 _password = _passwordGenerator.Generate(options);
+                _generationError = null;
             }
             catch (ArgumentException ex)
             {
-                _password = ex.Message;
+                _password = string.Empty;
+                _generationError = ex.Message;
             }
             finally
             {
-                FieldPassword.Text = _password;
+                FieldPassword.Text = _generationError ?? _password;
+                ButtonCopy.Enabled = !string.IsNullOrEmpty(_password);
             }
         }
 
