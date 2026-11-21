@@ -1,7 +1,7 @@
 # Онлайн-версия PassGen: сборка Blazor WebAssembly и раздача статики через Caddy.
 # Контекст сборки - корень репозитория (проект ссылается на ../PasswordGenerator.cs).
 
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:11.0 AS build
 WORKDIR /src
 
 # Сначала только проект и общий код - слой с restore кэшируется
