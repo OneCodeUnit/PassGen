@@ -3,6 +3,9 @@
 {
 	admin off
 	auto_https off
+	servers :8080 {
+		protocols h1
+	}
 }
 
 :8080 {
